@@ -119,10 +119,10 @@ body {
   position: sticky; top: 0; z-index: 100;
   box-shadow: 0 2px 8px rgba(46,125,50,0.2);
 }
-.header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+.header h1 { font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
 .header-date input {
   background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
-  color: #fff; font-size: 13px; cursor: pointer; outline: none;
+  color: #fff; font-size: 14px; cursor: pointer; outline: none;
   padding: 7px 14px; border-radius: 20px; transition: background var(--transition-fast);
   min-height: 36px; min-width: 130px;
 }
@@ -152,8 +152,8 @@ body {
 
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 6px 4px; cursor: pointer; color: var(--text-tertiary);
-  transition: all var(--transition); font-size: 10px; gap: 3px;
+  padding: 6px 4px; cursor: pointer; color: var(--primary);
+  transition: all var(--transition); font-size: 12px; gap: 3px;
   position: relative; min-height: 44px;
 }
 .nav-item::before {
@@ -182,7 +182,7 @@ body {
   box-shadow: var(--shadow-md);
 }
 .card-title {
-  font-size: 15px; font-weight: 600; color: var(--text);
+  font-size: 16px; font-weight: 600; color: var(--text);
   margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
   padding-bottom: 10px; border-bottom: 1.5px solid var(--primary-light);
 }
@@ -204,16 +204,16 @@ body {
 .metric-card.burned::after { background: #EF6C00; }
 .metric-card.net::after { background: #1565C0; }
 .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-.metric-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
-.metric-value { font-size: 28px; font-weight: 700; line-height: 1.2; }
-.metric-unit { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.metric-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+.metric-value { font-size: 30px; font-weight: 700; line-height: 1.2; }
+.metric-unit { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
 .metric-card.intake .metric-value { color: var(--primary); }
 .metric-card.burned .metric-value { color: #EF6C00; }
 .metric-card.net .metric-value { color: #1565C0; }
 
 /* ---- PROGRESS BAR ---- */
 .progress-label {
-  display: flex; justify-content: space-between; font-size: 13px;
+  display: flex; justify-content: space-between; font-size: 14px;
   margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;
 }
 .progress-bar {
@@ -232,7 +232,7 @@ body {
 .status-badge {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 4px 12px; border-radius: 20px;
-  font-size: 12px; font-weight: 600;
+  font-size: 13px; font-weight: 600;
 }
 .status-badge.good { background: var(--success-light); color: var(--success); }
 .status-badge.warn { background: var(--warning-light); color: var(--warning); }
@@ -241,7 +241,7 @@ body {
 /* ---- BUTTONS ---- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 12px 24px; border-radius: 25px; border: none; font-size: 14px;
+  padding: 12px 24px; border-radius: 25px; border: none; font-size: 15px;
   font-weight: 600; cursor: pointer; transition: all var(--transition-fast);
   position: relative; outline: none; min-height: 44px;
   -webkit-tap-highlight-color: transparent;
@@ -259,18 +259,18 @@ body {
   background: #fff; border: 1.5px solid var(--border); color: var(--text);
 }
 .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 20px; min-height: 36px; }
+.btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 20px; min-height: 36px; }
 .btn-block { width: 100%; }
 
 /* ---- FORM CONTROLS ---- */
 .form-group { margin-bottom: 16px; }
 .form-label {
-  display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;
+  display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px;
   color: var(--text-secondary);
 }
 .form-input, .form-select {
   width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0;
-  border-radius: var(--radius); font-size: 14px; outline: none;
+  border-radius: var(--radius); font-size: 15px; outline: none;
   background: #FAFAFA; color: var(--text);
   transition: all var(--transition-fast); font-family: inherit;
   min-height: 44px;
@@ -292,7 +292,7 @@ body {
 /* ---- TAGS / CHIPS ---- */
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .tag {
-  padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer;
+  padding: 8px 16px; border-radius: 20px; font-size: 13px; cursor: pointer;
   border: 1.5px solid var(--border); background: #fff;
   transition: all var(--transition-fast); white-space: nowrap;
   font-weight: 500; color: var(--text-secondary); min-height: 36px;
@@ -314,9 +314,9 @@ body {
 }
 .list-item:last-child { border-bottom: none; }
 .list-item-info { flex: 1; min-width: 0; }
-.list-item-name { font-weight: 500; font-size: 14px; }
-.list-item-detail { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-.list-item-value { font-weight: 600; font-size: 14px; white-space: nowrap; }
+.list-item-name { font-weight: 500; font-size: 15px; }
+.list-item-detail { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.list-item-value { font-weight: 600; font-size: 15px; white-space: nowrap; }
 .list-item-del {
   width: 30px; height: 30px; border-radius: 50%; border: none;
   background: var(--danger-light); color: var(--danger);
@@ -331,7 +331,7 @@ body {
 /* ---- MEAL SECTIONS ---- */
 .meal-section { margin-bottom: 12px; }
 .meal-header {
-  font-size: 13px; font-weight: 600; padding: 10px 14px;
+  font-size: 14px; font-weight: 600; padding: 10px 14px;
   background: var(--primary-light); border-radius: var(--radius-sm); margin-bottom: 4px;
   display: flex; justify-content: space-between; align-items: center;
   color: var(--primary-darker);
@@ -344,7 +344,7 @@ body {
 }
 .sub-tab {
   flex: 1; text-align: center; padding: 10px 8px; cursor: pointer;
-  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  font-size: 14px; font-weight: 600; color: var(--text-secondary);
   border-radius: 22px; transition: all var(--transition-fast);
   min-height: 40px; display: flex; align-items: center; justify-content: center;
 }
@@ -380,9 +380,9 @@ body {
   100% { transform: scale(1); }
 }
 .task-info { flex: 1; }
-.task-name { font-size: 14px; font-weight: 500; transition: all var(--transition-fast); }
+.task-name { font-size: 15px; font-weight: 500; transition: all var(--transition-fast); }
 .task-name.done { text-decoration: line-through; color: var(--text-tertiary); }
-.task-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+.task-meta { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
 
 /* ---- MODAL ---- */
 .modal-overlay {
@@ -413,14 +413,14 @@ body {
   border: 1px solid var(--border-light);
 }
 .summary-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-.summary-item .val { font-size: 24px; font-weight: 700; color: var(--text-primary); }
-.summary-item .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 4px; font-weight: 400; }
+.summary-item .val { font-size: 26px; font-weight: 700; color: var(--text-primary); }
+.summary-item .lbl { font-size: 13px; color: var(--text-secondary); margin-top: 4px; font-weight: 400; }
 
 /* ---- TOAST ---- */
 .toast {
   position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
   background: rgba(33,33,33,0.9); color: #fff; padding: 12px 24px;
-  border-radius: 25px; font-size: 13px; font-weight: 500; z-index: 999;
+  border-radius: 25px; font-size: 14px; font-weight: 500; z-index: 999;
   pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   animation: toastAnim 2s ease forwards;
 }
@@ -446,8 +446,8 @@ body {
   from { opacity: 0; transform: scale(0.9) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-.confirm-box h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-.confirm-box p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+.confirm-box h3 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.confirm-box p { font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
 .confirm-actions { display: flex; gap: 12px; justify-content: center; }
 .confirm-actions .btn { min-width: 100px; }
 
@@ -456,8 +456,8 @@ body {
   text-align: center; padding: 32px 20px; color: var(--text-tertiary);
 }
 .empty-state .empty-icon { font-size: 40px; margin-bottom: 8px; opacity: 0.5; display: block; }
-.empty-state .empty-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
-.empty-state .empty-hint { font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+.empty-state .empty-title { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+.empty-state .empty-hint { font-size: 13px; color: var(--text-tertiary); line-height: 1.5; }
 
 /* ---- UTILITY ---- */
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -480,23 +480,23 @@ body {
   .metrics-row { grid-template-columns: 1fr; gap: 8px; }
   .metric-card { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; text-align: left; }
   .metric-card::after { display: none; }
-  .metric-value { font-size: 22px; }
+  .metric-value { font-size: 24px; }
   .metric-label { margin-bottom: 0; }
   .form-row { grid-template-columns: 1fr; }
   .card { padding: 14px; margin-bottom: 14px; }
   .header { padding: 12px 14px; }
-  .header h1 { font-size: 18px; }
+  .header h1 { font-size: 20px; }
   .main { padding: 12px; padding-bottom: 90px; }
-  .summary-item .val { font-size: 18px; }
+  .summary-item .val { font-size: 20px; }
   .chart-wrap { height: 200px; }
-  .sub-tab { font-size: 12px; padding: 8px 4px; }
-  .header-date input { padding: 6px 10px; font-size: 12px; min-width: 110px; }
+  .sub-tab { font-size: 13px; padding: 8px 4px; }
+  .header-date input { padding: 6px 10px; font-size: 13px; min-width: 110px; }
 }
 
 /* ---- RESPONSIVE: Medium phone / small tablet (451px–699px) ---- */
 @media (min-width: 451px) and (max-width: 699px) {
   .metrics-row { gap: 10px; }
-  .metric-value { font-size: 26px; }
+  .metric-value { font-size: 28px; }
   .chart-wrap { height: 240px; }
 }
 
@@ -505,7 +505,7 @@ body {
   .main { padding: 20px 24px; }
   .metrics-row { gap: 14px; }
   .metric-card { padding: 20px 14px; }
-  .metric-value { font-size: 30px; }
+  .metric-value { font-size: 32px; }
   .chart-wrap { height: 280px; }
   .summary-grid { grid-template-columns: repeat(4, 1fr); }
 }
@@ -516,7 +516,7 @@ body {
   .card { padding: 22px 24px; margin-bottom: 16px; }
   .metrics-row { gap: 16px; }
   .metric-card { padding: 24px 18px; }
-  .metric-value { font-size: 34px; }
+  .metric-value { font-size: 36px; }
   .chart-wrap { height: 300px; }
   .summary-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .summary-item { padding: 20px 14px; }
@@ -525,7 +525,7 @@ body {
 /* ---- RESPONSIVE: Large desktop (1200px) ---- */
 @media (min-width: 1200px) {
   .main { padding: 28px 40px; }
-  .metric-value { font-size: 36px; }
+  .metric-value { font-size: 38px; }
   .chart-wrap { height: 320px; }
   .summary-grid { gap: 14px; }
 }
@@ -1019,14 +1019,14 @@ function renderMealSummary(rec) {
           <span>${label}</span>
           <span>${totalKcal} kcal</span>
         </div>
-        ${items.length === 0 ? '<div style="padding:6px 12px;font-size:12px;color:var(--text-secondary)">暂无记录</div>' :
+        ${items.length === 0 ? '<div style="padding:6px 12px;font-size:13px;color:var(--text-secondary)">暂无记录</div>' :
           items.map(f => `
             <div class="list-item" style="padding:6px 12px">
               <div class="list-item-info">
-                <span style="font-size:13px">${escHtml(f.name)}</span>
-                <span style="font-size:11px;color:var(--text-secondary);margin-left:6px">${f.weight}g</span>
+                <span style="font-size:14px">${escHtml(f.name)}</span>
+                <span style="font-size:12px;color:var(--text-secondary);margin-left:6px">${f.weight}g</span>
               </div>
-              <span style="font-size:13px;font-weight:600">${f.calories} kcal</span>
+              <span style="font-size:14px;font-weight:600">${f.calories} kcal</span>
             </div>
           `).join('')
         }
@@ -1157,7 +1157,7 @@ function renderTasksTab(rec) {
   return `
     <div class="card">
       <div class="card-title"><span class="title-icon">💡</span> 运动建议</div>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px">
         根据你的减肥目标，建议每日额外消耗 <b>${recommendedKcal} kcal</b>，约需运动 <b>${recommendedMin} 分钟</b>。
       </p>
     </div>
@@ -1284,7 +1284,7 @@ function renderWeeklySummary() {
         <div class="list-item-name">${w.label}</div>
         <div class="list-item-detail">${w.days}天记录</div>
       </div>
-      <div style="text-align:right;font-size:12px">
+      <div style="text-align:right;font-size:13px">
         <div>摄入 ${w.avgIntake} kcal/天</div>
         <div style="color:var(--success)">消耗 ${w.avgBurned} kcal/天</div>
       </div>
@@ -1417,13 +1417,13 @@ function renderSettings() {
 
     <div class="card" id="pwaInstallArea" style="display:none">
       <div class="card-title"><span class="title-icon">📲</span> 安装应用</div>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px">
         将 FitTrack 添加到主屏幕，像原生 App 一样快速启动，支持离线使用。
       </p>
       <button class="btn btn-primary btn-block" onclick="triggerInstall()">添加到主屏幕</button>
     </div>
 
-    <div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:12px">
+    <div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px">
       FitTrack v2.0 · PWA离线可用 · 数据存储于浏览器本地
     </div>
   `;

@@ -1,7 +1,7 @@
 // FitTrack Service Worker — PWA Offline Support
 // Cache-first for local assets, network-first for CDN, stale-while-revalidate for data
 
-const CACHE_VERSION = 'fittrack-v4';
+const CACHE_VERSION = 'fittrack-v5';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const CDN_CACHE = CACHE_VERSION + '-cdn';
 
