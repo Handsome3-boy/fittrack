@@ -1,0 +1,64 @@
+{
+  "name": "FitTrack - 健身热量追踪",
+  "short_name": "FitTrack",
+  "description": "个人健身热量追踪与减肥规划应用",
+  "start_url": "./fitness-tracker.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "theme_color": "#2E7D32",
+  "background_color": "#2E7D32",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "./icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "记录饮食",
+      "short_name": "饮食",
+      "description": "快速记录今日饮食",
+      "url": "./fitness-tracker.html?page=record&tab=food",
+      "icons": [
+        { "src": "./icon-192.svg", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "记录运动",
+      "short_name": "运动",
+      "description": "快速记录今日运动",
+      "url": "./fitness-tracker.html?page=record&tab=exercise",
+      "icons": [
+        { "src": "./icon-192.svg", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "查看统计",
+      "short_name": "统计",
+      "description": "查看健身统计数据",
+      "url": "./fitness-tracker.html?page=stats",
+      "icons": [
+        { "src": "./icon-192.svg", "sizes": "192x192" }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
+}

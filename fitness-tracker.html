@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<title>FitTrack - 健身热量追踪</title>
+
+<!-- PWA Meta Tags -->
+<meta name="application-name" content="FitTrack">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FitTrack">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2E7D32">
+<meta name="description" content="个人健身热量追踪与减肥规划应用">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232E7D32'/%3E%3Ctext x='50' y='45' text-anchor='middle' font-size='40' fill='white' font-family='sans-serif' font-weight='bold'%3EFT%3C/text%3E%3Ctext x='50' y='78' text-anchor='middle' font-size='16' fill='rgba(255,255,255,0.8)'%3E🏃%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%232E7D32'/%3E%3Ctext x='96' y='82' text-anchor='middle' font-size='72' fill='white' font-family='sans-serif' font-weight='bold'%3EFT%3C/text%3E%3Ctext x='96' y='148' text-anchor='middle' font-size='28' fill='rgba(255,255,255,0.8)'%3E🏃%3C/text%3E%3C/svg%3E">
+
+<!-- iOS PWA: splash screen -->
+<link rel="apple-touch-startup-image" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1170 2532'%3E%3Crect width='1170' height='2532' fill='%232E7D32'/%3E%3Ctext x='585' y='1180' text-anchor='middle' font-size='200' fill='white' font-family='sans-serif' font-weight='bold'%3EFT%3C/text%3E%3Ctext x='585' y='1400' text-anchor='middle' font-size='80' fill='rgba(255,255,255,0.8)'%3E🏃 健身热量追踪%3C/text%3E%3C/svg%3E" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ============================================================
+   FITTRACK — Refined Health App Design System v2
+   Color: #2E7D32 primary green · #E8F5E9 mint · #FAFAFA warm white
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Primary green palette */
+  --primary: #2E7D32;
+  --primary-dark: #256B28;
+  --primary-darker: #1B5E20;
+  --primary-light: #E8F5E9;
+  --primary-surface: #F1F8F2;
+
+  /* Accent */
+  --accent: #FF8F00;
+  --accent-light: #FFF8E1;
+
+  /* Semantic */
+  --success: #2E7D32;
+  --success-light: #E8F5E9;
+  --warning: #EF6C00;
+  --warning-light: #FFF3E0;
+  --danger: #C62828;
+  --danger-light: #FFEBEE;
+
+  /* Surfaces */
+  --bg: #F5F5F5;
+  --bg-warm: #FAFAFA;
+  --card: #FFFFFF;
+  --card-hover: #FCFCFC;
+
+  /* Text */
+  --text: #212121;
+  --text-primary: #1B5E20;
+  --text-secondary: #757575;
+  --text-tertiary: #9E9E9E;
+
+  /* Borders & shadows */
+  --border: #E0E0E0;
+  --border-light: #EEEEEE;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow: 0 2px 8px rgba(0,0,0,0.07);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+
+  --transition-fast: 0.15s ease;
+  --transition: 0.25s ease;
+  --transition-slow: 0.35s ease;
+  --spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html {
+  min-width: 375px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.6;
+  -webkit-tap-highlight-color: transparent; user-select: none;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  min-width: 375px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app {
+  width: 100%;
+  min-width: 375px;
+  max-width: 1200px;
+  min-height: 100vh;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--border-light);
+}
+@media (min-width: 1201px) {
+  .app { box-shadow: 0 0 60px rgba(0,0,0,0.06), 0 0 0 1px var(--border-light); }
+}
+
+/* ---- HEADER ---- */
+.header {
+  background: linear-gradient(135deg, #2E7D32, #38853A);
+  color: #fff; padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(46,125,50,0.2);
+}
+.header h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+.header-date input {
+  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; font-size: 13px; cursor: pointer; outline: none;
+  padding: 7px 14px; border-radius: 20px; transition: background var(--transition-fast);
+  min-height: 36px; min-width: 130px;
+}
+.header-date input:hover { background: rgba(255,255,255,0.3); }
+.header-date input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+/* ---- MAIN CONTENT ---- */
+.main {
+  flex: 1; padding: 16px; padding-bottom: 100px; overflow-y: auto;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- BOTTOM NAVIGATION ---- */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; min-width: 375px; max-width: 1200px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-light);
+  display: flex; z-index: 100;
+  padding: 8px 0 env(safe-area-inset-bottom, 8px);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+}
+
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 6px 4px; cursor: pointer; color: var(--text-tertiary);
+  transition: all var(--transition); font-size: 10px; gap: 3px;
+  position: relative; min-height: 44px;
+}
+.nav-item::before {
+  content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%) scaleX(0);
+  width: 20px; height: 3px; border-radius: 2px;
+  background: var(--primary); transition: transform var(--spring);
+}
+.nav-item.active::before { transform: translateX(-50%) scaleX(1); }
+.nav-item.active { color: var(--primary); }
+.nav-item:active { transform: scale(0.94); }
+.nav-item svg { width: 24px; height: 24px; }
+.nav-item span { font-weight: 600; }
+
+/* ---- CARDS ---- */
+.card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FCFCFC 100%);
+  border-radius: var(--radius-lg); padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  border: 1px solid var(--border-light);
+  position: relative; overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.card-title {
+  font-size: 15px; font-weight: 600; color: var(--text);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  padding-bottom: 10px; border-bottom: 1.5px solid var(--primary-light);
+}
+.card-title .title-icon { font-size: 18px; line-height: 1; }
+
+/* ---- METRIC CARDS ---- */
+.metrics-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.metric-card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+  border-radius: var(--radius); padding: 16px 12px; text-align: center;
+  box-shadow: var(--shadow-xs); border: 1px solid var(--border-light);
+  transition: all var(--transition); position: relative; overflow: hidden;
+}
+.metric-card::after {
+  content: ''; position: absolute; bottom: 0; left: 25%; right: 25%; height: 2px;
+  border-radius: 1px;
+}
+.metric-card.intake::after { background: var(--primary); }
+.metric-card.burned::after { background: #EF6C00; }
+.metric-card.net::after { background: #1565C0; }
+.metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.metric-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+.metric-value { font-size: 28px; font-weight: 700; line-height: 1.2; }
+.metric-unit { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.metric-card.intake .metric-value { color: var(--primary); }
+.metric-card.burned .metric-value { color: #EF6C00; }
+.metric-card.net .metric-value { color: #1565C0; }
+
+/* ---- PROGRESS BAR ---- */
+.progress-label {
+  display: flex; justify-content: space-between; font-size: 13px;
+  margin-bottom: 6px; color: var(--text-secondary); font-weight: 500;
+}
+.progress-bar {
+  height: 10px; background: #E0E0E0; border-radius: 5px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 5px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.progress-fill.safe { background: linear-gradient(90deg, #2E7D32, #43A047); }
+.progress-fill.warn { background: linear-gradient(90deg, #EF6C00, #FF9800); }
+.progress-fill.danger { background: linear-gradient(90deg, #C62828, #E53935); }
+
+/* ---- STATUS BADGE ---- */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+}
+.status-badge.good { background: var(--success-light); color: var(--success); }
+.status-badge.warn { background: var(--warning-light); color: var(--warning); }
+.status-badge.bad { background: var(--danger-light); color: var(--danger); }
+
+/* ---- BUTTONS ---- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 24px; border-radius: 25px; border: none; font-size: 14px;
+  font-weight: 600; cursor: pointer; transition: all var(--transition-fast);
+  position: relative; outline: none; min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { filter: brightness(0.9); }
+.btn:active { transform: scale(0.98); transition: transform 0.1s ease; }
+.btn-primary {
+  background: linear-gradient(135deg, #2E7D32, #38853A);
+  color: #fff; box-shadow: 0 2px 8px rgba(46,125,50,0.25);
+}
+.btn-primary:hover { box-shadow: 0 4px 12px rgba(46,125,50,0.35); }
+.btn-success { background: linear-gradient(135deg, #2E7D32, #38853A); color: #fff; }
+.btn-danger { background: linear-gradient(135deg, #C62828, #D32F2F); color: #fff; }
+.btn-outline {
+  background: #fff; border: 1.5px solid var(--border); color: var(--text);
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 20px; min-height: 36px; }
+.btn-block { width: 100%; }
+
+/* ---- FORM CONTROLS ---- */
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+.form-input, .form-select {
+  width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0;
+  border-radius: var(--radius); font-size: 14px; outline: none;
+  background: #FAFAFA; color: var(--text);
+  transition: all var(--transition-fast); font-family: inherit;
+  min-height: 44px;
+}
+.form-input:hover, .form-select:hover { border-color: #BDBDBD; }
+.form-input:focus, .form-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+  background: #fff;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23757575' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
+  cursor: pointer;
+}
+
+/* ---- TAGS / CHIPS ---- */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tag {
+  padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer;
+  border: 1.5px solid var(--border); background: #fff;
+  transition: all var(--transition-fast); white-space: nowrap;
+  font-weight: 500; color: var(--text-secondary); min-height: 36px;
+  display: inline-flex; align-items: center;
+}
+.tag:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.tag:active { transform: scale(0.96); }
+.tag.active {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(46,125,50,0.2);
+}
+
+/* ---- LIST ITEMS ---- */
+.list-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 4px; gap: 10px;
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-fast);
+}
+.list-item:last-child { border-bottom: none; }
+.list-item-info { flex: 1; min-width: 0; }
+.list-item-name { font-weight: 500; font-size: 14px; }
+.list-item-detail { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.list-item-value { font-weight: 600; font-size: 14px; white-space: nowrap; }
+.list-item-del {
+  width: 30px; height: 30px; border-radius: 50%; border: none;
+  background: var(--danger-light); color: var(--danger);
+  cursor: pointer; font-size: 16px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition-fast); flex-shrink: 0;
+  min-width: 44px; min-height: 44px;
+}
+.list-item-del:hover { background: #FFCDD2; transform: scale(1.1); }
+.list-item-del:active { transform: scale(0.9); }
+
+/* ---- MEAL SECTIONS ---- */
+.meal-section { margin-bottom: 12px; }
+.meal-header {
+  font-size: 13px; font-weight: 600; padding: 10px 14px;
+  background: var(--primary-light); border-radius: var(--radius-sm); margin-bottom: 4px;
+  display: flex; justify-content: space-between; align-items: center;
+  color: var(--primary-darker);
+}
+
+/* ---- SUB TABS ---- */
+.sub-tabs {
+  display: flex; background: #EEEEEE; border-radius: 25px;
+  padding: 4px; margin-bottom: 16px; gap: 4px;
+}
+.sub-tab {
+  flex: 1; text-align: center; padding: 10px 8px; cursor: pointer;
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+  border-radius: 22px; transition: all var(--transition-fast);
+  min-height: 40px; display: flex; align-items: center; justify-content: center;
+}
+.sub-tab.active {
+  background: #fff; color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ---- TASK ITEMS ---- */
+.task-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+.task-checkbox {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid #BDBDBD;
+  cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  transition: all var(--spring); background: #fff;
+  min-width: 44px; min-height: 44px;
+  position: relative;
+}
+.task-checkbox::after {
+  content: '✓'; font-size: 14px; font-weight: 700; color: transparent;
+  transition: color 0.2s ease;
+}
+.task-checkbox:hover { border-color: var(--primary); }
+.task-checkbox:active { transform: scale(0.9); }
+.task-checkbox.done {
+  background: var(--primary); border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(46,125,50,0.25);
+  animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.task-checkbox.done::after { color: #fff; }
+@keyframes checkPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.task-info { flex: 1; }
+.task-name { font-size: 14px; font-weight: 500; transition: all var(--transition-fast); }
+.task-name.done { text-decoration: line-through; color: var(--text-tertiary); }
+.task-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+/* ---- MODAL ---- */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  z-index: 200; display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: #fff; border-radius: 20px 20px 0 0; width: 100%;
+  max-width: 480px; max-height: 85vh; overflow-y: auto; padding: 24px;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* ---- CHARTS ---- */
+.chart-wrap {
+  position: relative; height: 260px; margin: 10px 0;
+  background: var(--bg-warm); border-radius: var(--radius); padding: 8px;
+}
+
+/* ---- SUMMARY GRID ---- */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.summary-item {
+  text-align: center; padding: 16px 12px;
+  background: linear-gradient(180deg, #FFFFFF, #FAFAFA);
+  border-radius: var(--radius); transition: all var(--transition-fast);
+  border: 1px solid var(--border-light);
+}
+.summary-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.summary-item .val { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+.summary-item .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 4px; font-weight: 400; }
+
+/* ---- TOAST ---- */
+.toast {
+  position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(33,33,33,0.9); color: #fff; padding: 12px 24px;
+  border-radius: 25px; font-size: 13px; font-weight: 500; z-index: 999;
+  pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  animation: toastAnim 2s ease forwards;
+}
+@keyframes toastAnim {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+}
+
+/* ---- CONFIRM DIALOG ---- */
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  z-index: 300; display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.confirm-box {
+  background: #fff; border-radius: var(--radius-xl); padding: 28px 24px;
+  max-width: 320px; width: 90%; text-align: center; box-shadow: var(--shadow-lg);
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.confirm-box h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.confirm-box p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+.confirm-actions { display: flex; gap: 12px; justify-content: center; }
+.confirm-actions .btn { min-width: 100px; }
+
+/* ---- EMPTY STATE ---- */
+.empty-state {
+  text-align: center; padding: 32px 20px; color: var(--text-tertiary);
+}
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 8px; opacity: 0.5; display: block; }
+.empty-state .empty-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+.empty-state .empty-hint { font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+
+/* ---- UTILITY ---- */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 2s infinite; }
+
+/* Card entrance */
+@keyframes cardUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- SCROLLBAR ---- */
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: #F0F0F0; border-radius: 3px; }
+.main::-webkit-scrollbar-thumb { background: #BDBDBD; border-radius: 3px; }
+.main::-webkit-scrollbar-thumb:hover { background: #9E9E9E; }
+
+/* ---- RESPONSIVE: Phone (375px) ---- */
+@media (max-width: 450px) {
+  .metrics-row { grid-template-columns: 1fr; gap: 8px; }
+  .metric-card { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+  .metric-card::after { display: none; }
+  .metric-value { font-size: 22px; }
+  .metric-label { margin-bottom: 0; }
+  .form-row { grid-template-columns: 1fr; }
+  .card { padding: 14px; margin-bottom: 14px; }
+  .header { padding: 12px 14px; }
+  .header h1 { font-size: 18px; }
+  .main { padding: 12px; padding-bottom: 90px; }
+  .summary-item .val { font-size: 18px; }
+  .chart-wrap { height: 200px; }
+  .sub-tab { font-size: 12px; padding: 8px 4px; }
+  .header-date input { padding: 6px 10px; font-size: 12px; min-width: 110px; }
+}
+
+/* ---- RESPONSIVE: Medium phone / small tablet (451px–699px) ---- */
+@media (min-width: 451px) and (max-width: 699px) {
+  .metrics-row { gap: 10px; }
+  .metric-value { font-size: 26px; }
+  .chart-wrap { height: 240px; }
+}
+
+/* ---- RESPONSIVE: Tablet (700px–899px) ---- */
+@media (min-width: 700px) and (max-width: 899px) {
+  .main { padding: 20px 24px; }
+  .metrics-row { gap: 14px; }
+  .metric-card { padding: 20px 14px; }
+  .metric-value { font-size: 30px; }
+  .chart-wrap { height: 280px; }
+  .summary-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---- RESPONSIVE: Desktop (900px+) ---- */
+@media (min-width: 900px) {
+  .main { padding: 24px 28px; }
+  .card { padding: 22px 24px; margin-bottom: 16px; }
+  .metrics-row { gap: 16px; }
+  .metric-card { padding: 24px 18px; }
+  .metric-value { font-size: 34px; }
+  .chart-wrap { height: 300px; }
+  .summary-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .summary-item { padding: 20px 14px; }
+}
+
+/* ---- RESPONSIVE: Large desktop (1200px) ---- */
+@media (min-width: 1200px) {
+  .main { padding: 28px 40px; }
+  .metric-value { font-size: 36px; }
+  .chart-wrap { height: 320px; }
+  .summary-grid { gap: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- Header -->
+  <header class="header">
+    <h1>FitTrack</h1>
+    <div class="header-date">
+      <input type="date" id="globalDate" title="选择日期">
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main" id="mainContent"></main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-page="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>首页</span>
+    </div>
+    <div class="nav-item" data-page="record">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>记录</span>
+    </div>
+    <div class="nav-item" data-page="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>统计</span>
+    </div>
+    <div class="nav-item" data-page="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>设置</span>
+    </div>
+  </nav>
+</div>
+
+<!-- Modals will be injected by JS -->
+
+<script>
+// ============================================================
+// CONSTANTS & PRESETS
+// ============================================================
+
+const FOOD_DB = [
+  { name: '米饭(熟)', kcalPer100g: 116 },
+  { name: '面条(熟)', kcalPer100g: 110 },
+  { name: '馒头', kcalPer100g: 223 },
+  { name: '全麦面包', kcalPer100g: 246 },
+  { name: '燕麦片', kcalPer100g: 367 },
+  { name: '鸡蛋(煮)', kcalPer100g: 144 },
+  { name: '鸡蛋白', kcalPer100g: 52 },
+  { name: '牛奶(全脂)', kcalPer100g: 65 },
+  { name: '酸奶(原味)', kcalPer100g: 63 },
+  { name: '鸡胸肉', kcalPer100g: 133 },
+  { name: '鸡腿肉(去皮)', kcalPer100g: 119 },
+  { name: '牛肉(瘦)', kcalPer100g: 125 },
+  { name: '猪肉(瘦)', kcalPer100g: 143 },
+  { name: '三文鱼', kcalPer100g: 208 },
+  { name: '虾仁', kcalPer100g: 99 },
+  { name: '豆腐', kcalPer100g: 76 },
+  { name: '西兰花', kcalPer100g: 34 },
+  { name: '菠菜', kcalPer100g: 23 },
+  { name: '番茄', kcalPer100g: 18 },
+  { name: '黄瓜', kcalPer100g: 15 },
+  { name: '胡萝卜', kcalPer100g: 37 },
+  { name: '土豆', kcalPer100g: 76 },
+  { name: '玉米', kcalPer100g: 112 },
+  { name: '苹果', kcalPer100g: 52 },
+  { name: '香蕉', kcalPer100g: 93 },
+  { name: '橙子', kcalPer100g: 47 },
+  { name: '葡萄', kcalPer100g: 69 },
+  { name: '牛油果', kcalPer100g: 160 },
+  { name: '核桃', kcalPer100g: 654 },
+  { name: '花生', kcalPer100g: 567 },
+];
+
+const EXERCISE_DB = [
+  { name: '跑步(8km/h)', kcalPerMin: 8.0 },
+  { name: '慢跑(6km/h)', kcalPerMin: 5.5 },
+  { name: '快走(5km/h)', kcalPerMin: 4.0 },
+  { name: '散步', kcalPerMin: 2.5 },
+  { name: '游泳(自由泳)', kcalPerMin: 9.0 },
+  { name: '骑行(15km/h)', kcalPerMin: 6.0 },
+  { name: '跳绳(中速)', kcalPerMin: 10.0 },
+  { name: '力量训练', kcalPerMin: 5.5 },
+  { name: '瑜伽', kcalPerMin: 3.5 },
+  { name: 'HIIT训练', kcalPerMin: 11.0 },
+  { name: '爬楼梯', kcalPerMin: 8.0 },
+  { name: '椭圆机', kcalPerMin: 6.5 },
+  { name: '划船机', kcalPerMin: 7.0 },
+  { name: '健身操', kcalPerMin: 5.0 },
+  { name: '篮球', kcalPerMin: 6.5 },
+  { name: '羽毛球', kcalPerMin: 5.5 },
+  { name: '乒乓球', kcalPerMin: 4.0 },
+  { name: '舞蹈', kcalPerMin: 5.0 },
+  { name: '拳击', kcalPerMin: 9.5 },
+];
+
+const ACTIVITY_LEVELS = [
+  { value: 'sedentary', label: '久坐不动', factor: 1.2 },
+  { value: 'light', label: '轻度活动(1-2天/周)', factor: 1.375 },
+  { value: 'moderate', label: '中度活动(3-5天/周)', factor: 1.55 },
+  { value: 'active', label: '高度活动(6-7天/周)', factor: 1.725 },
+  { value: 'very_active', label: '极高活动(体力劳动者)', factor: 1.9 },
+];
+
+const DEFAULT_PROFILE = {
+  gender: 'male', age: 25, height: 170, currentWeight: 80,
+  targetWeight: 70, weeks: 12, activityLevel: 'light', startDate: ''
+};
+
+// ============================================================
+// DATA MANAGER
+// ============================================================
+
+const STORAGE_KEY = 'fittrack_data';
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return initDefaultData();
+    const data = JSON.parse(raw);
+    if (!data.profile) data.profile = { ...DEFAULT_PROFILE, startDate: today() };
+    if (!data.records) data.records = {};
+    if (!data.weightLog) data.weightLog = {};
+    return data;
+  } catch (e) {
+    return initDefaultData();
+  }
+}
+
+function initDefaultData() {
+  return {
+    profile: { ...DEFAULT_PROFILE, startDate: today() },
+    records: {},
+    weightLog: {}
+  };
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let appData = loadData();
+
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function getRecord(date) {
+  if (!appData.records[date]) {
+    appData.records[date] = { foods: [], exercises: [], tasks: [] };
+  }
+  return appData.records[date];
+}
+
+function ensureDate(date) {
+  if (!appData.records[date]) {
+    appData.records[date] = { foods: [], exercises: [], tasks: [] };
+  }
+  // Generate default tasks if none
+  if (appData.records[date].tasks.length === 0) {
+    generateDailyTasks(date);
+  }
+}
+
+function generateDailyTasks(date) {
+  const p = appData.profile;
+  const deficit = getDailyDeficit();
+  const bmr = getBMR();
+  const tdee = getTDEE();
+  const recKcal = Math.max(200, Math.round(deficit * 0.4));
+  const recMin = Math.max(20, Math.round(recKcal / 6));
+
+  const tasks = [
+    { id: 't1', name: '有氧运动', targetDuration: recMin, targetCalories: recKcal, completed: false, type: 'cardio', generated: true },
+    { id: 't2', name: '力量训练', targetDuration: 20, targetCalories: 120, completed: false, type: 'strength', generated: true },
+    { id: 't3', name: '喝足2升水', targetDuration: 0, targetCalories: 0, completed: false, type: 'habit', generated: true },
+    { id: 't4', name: '记录今日饮食', targetDuration: 0, targetCalories: 0, completed: false, type: 'habit', generated: true },
+  ];
+  appData.records[date].tasks = tasks;
+  saveData(appData);
+}
+
+function getBMR() {
+  const p = appData.profile;
+  if (p.gender === 'male') {
+    return 10 * p.currentWeight + 6.25 * p.height - 5 * p.age + 5;
+  } else {
+    return 10 * p.currentWeight + 6.25 * p.height - 5 * p.age - 161;
+  }
+}
+
+function getTDEE() {
+  const bmr = getBMR();
+  const level = ACTIVITY_LEVELS.find(l => l.value === appData.profile.activityLevel);
+  return Math.round(bmr * (level ? level.factor : 1.2));
+}
+
+function getDailyDeficit() {
+  const p = appData.profile;
+  const kgToLose = p.currentWeight - p.targetWeight;
+  if (kgToLose <= 0 || p.weeks <= 0) return 0;
+  const totalDeficit = kgToLose * 7700;
+  return Math.round(totalDeficit / (p.weeks * 7));
+}
+
+function getTargetIntake() {
+  const tdee = getTDEE();
+  const deficit = getDailyDeficit();
+  return Math.max(1200, tdee - deficit);
+}
+
+function getDayIntake(date) {
+  const rec = appData.records[date];
+  if (!rec) return 0;
+  return rec.foods.reduce((sum, f) => sum + f.calories, 0);
+}
+
+function getDayBurned(date) {
+  const rec = appData.records[date];
+  if (!rec) return 0;
+  return rec.exercises.reduce((sum, e) => sum + e.calories, 0);
+}
+
+function getDayNet(date) {
+  return getDayIntake(date) - getBMR() - getDayBurned(date);
+}
+
+function getStreak() {
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const ds = d.toISOString().split('T')[0];
+    const rec = appData.records[ds];
+    if (rec && (rec.foods.length > 0 || rec.exercises.length > 0)) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else if (ds === today()) {
+      d.setDate(d.getDate() - 1);
+      continue;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function getTotalLost() {
+  const p = appData.profile;
+  const entries = Object.entries(appData.weightLog).sort();
+  if (entries.length === 0) return 0;
+  const firstWeight = parseFloat(entries[0][1]);
+  const lastWeight = parseFloat(entries[entries.length - 1][1]);
+  return firstWeight - lastWeight;
+}
+
+function getStartWeight() {
+  const entries = Object.entries(appData.weightLog).sort();
+  if (entries.length > 0) return parseFloat(entries[0][1]);
+  return appData.profile.currentWeight;
+}
+
+// ============================================================
+// UI RENDERERS
+// ============================================================
+
+let currentPage = 'home';
+let currentDate = today();
+let recordSubTab = 'food';
+let addingFood = null;
+let addingExercise = null;
+
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return document.querySelectorAll(sel); }
+
+function renderApp() {
+  renderPage();
+}
+
+function switchPage(page) {
+  if (currentPage === page) return;
+  // Animate out current content
+  const main = $('#mainContent');
+  main.style.opacity = '0';
+  main.style.transform = 'translateY(6px)';
+  main.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+
+  setTimeout(() => {
+    currentPage = page;
+    $$('.nav-item').forEach(n => n.classList.remove('active'));
+    const navItem = $(`.nav-item[data-page="${page}"]`);
+    if (navItem) navItem.classList.add('active');
+    renderPage();
+    // Animate in
+    requestAnimationFrame(() => {
+      main.style.opacity = '1';
+      main.style.transform = 'translateY(0)';
+      main.style.transition = 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    });
+    // Trigger number animations after content is visible
+    setTimeout(animateMetricValues, 100);
+  }, 150);
+}
+
+function switchDate(date) {
+  currentDate = date;
+  ensureDate(currentDate);
+  $('#globalDate').value = currentDate;
+  const main = $('#mainContent');
+  main.style.opacity = '0';
+  main.style.transform = 'translateY(4px)';
+  main.style.transition = 'opacity 0.1s ease, transform 0.1s ease';
+  setTimeout(() => {
+    renderPage();
+    requestAnimationFrame(() => {
+      main.style.opacity = '1';
+      main.style.transform = 'translateY(0)';
+      main.style.transition = 'opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    });
+    setTimeout(animateMetricValues, 80);
+  }, 100);
+}
+
+let _pageRenderToken = 0;
+
+function renderPage() {
+  const token = ++_pageRenderToken;
+  const main = $('#mainContent');
+  ensureDate(currentDate);
+  switch (currentPage) {
+    case 'home': main.innerHTML = renderHome(); break;
+    case 'record': main.innerHTML = renderRecord(); break;
+    case 'stats': main.innerHTML = renderStats(); break;
+    case 'settings': main.innerHTML = renderSettings(); break;
+  }
+  bindPageEvents();
+  if (currentPage === 'stats') initCharts();
+  // Animate numbers after render (debounced via token)
+  if (token === _pageRenderToken) {
+    setTimeout(() => { if (token === _pageRenderToken) animateMetricValues(); }, 80);
+  }
+}
+
+// ---- NUMBER ANIMATION ----
+function animateMetricValues() {
+  document.querySelectorAll('.metric-value, .summary-item .val').forEach(el => {
+    animateNumber(el);
+  });
+}
+
+function animateNumber(el) {
+  const text = el.textContent.trim();
+  const num = parseFloat(text);
+  if (isNaN(num)) return;
+  const isFloat = text.includes('.');
+  const suffix = text.replace(/[0-9.\-]/g, '');
+  const duration = 500;
+  const start = performance.now();
+  const from = 0;
+  const to = Math.abs(num);
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = from + (to - from) * eased;
+    const display = isFloat ? current.toFixed(1) : Math.round(current);
+    el.textContent = (num < 0 ? '-' : '') + display + suffix;
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+  requestAnimationFrame(update);
+}
+
+// ---- HOME PAGE ----
+function renderHome() {
+  const rec = getRecord(currentDate);
+  const targetIntake = getTargetIntake();
+  const currentIntake = getDayIntake(currentDate);
+  const burned = getDayBurned(currentDate);
+  const net = getDayNet(currentDate);
+  const remaining = targetIntake - currentIntake;
+  const bmr = Math.round(getBMR());
+  const tdee = getTDEE();
+  const streak = getStreak();
+
+  let intakePct = targetIntake > 0 ? (currentIntake / targetIntake) * 100 : 0;
+  let statusClass = intakePct <= 85 ? 'safe' : intakePct <= 100 ? 'warn' : 'danger';
+  let statusText = intakePct <= 85 ? '达标' : intakePct <= 100 ? '接近上限' : '超标';
+  let statusBadge = intakePct <= 85 ? 'good' : intakePct <= 100 ? 'warn' : 'bad';
+
+  return `
+    <div class="metrics-row">
+      <div class="metric-card intake">
+        <div class="metric-label">今日摄入</div>
+        <div class="metric-value">${currentIntake}</div>
+        <div class="metric-unit">/ ${targetIntake} 千卡</div>
+      </div>
+      <div class="metric-card burned">
+        <div class="metric-label">运动消耗</div>
+        <div class="metric-value">${burned}</div>
+        <div class="metric-unit">千卡</div>
+      </div>
+      <div class="metric-card net">
+        <div class="metric-label">净热量</div>
+        <div class="metric-value">${net}</div>
+        <div class="metric-unit">千卡</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="progress-label">
+        <span>摄入进度</span>
+        <span class="status-badge ${statusBadge}">${statusText}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill ${statusClass}" style="width:${Math.min(intakePct, 120)}%"></div>
+      </div>
+      <div class="progress-label" style="margin-top:6px">
+        <span>今日还能吃: <b>${remaining > 0 ? remaining : 0}</b> 千卡</span>
+        <span>基础代谢: ${bmr} | TDEE: ${tdee}</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">🍽️</span> 今日饮食摘要</div>
+      ${renderMealSummary(rec)}
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">🏃</span> 今日运动</div>
+      ${rec.exercises.length === 0 ? '<div class="empty-state"><span class="empty-icon">🏃</span><div class="empty-title">还没有运动记录</div><div class="empty-hint">今天还没运动哦，快去燃烧卡路里吧～</div></div>' :
+        rec.exercises.map(e => `
+          <div class="list-item">
+            <div class="list-item-info">
+              <div class="list-item-name">${escHtml(e.name)}</div>
+              <div class="list-item-detail">${e.duration} 分钟</div>
+            </div>
+            <div class="list-item-value">${e.calories} kcal</div>
+          </div>
+        `).join('')
+      }
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">✅</span> 每日任务</div>
+      <div class="progress-label">
+        <span>完成进度</span>
+        <span>${rec.tasks.filter(t => t.completed).length}/${rec.tasks.length}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill safe" style="width:${rec.tasks.length > 0 ? (rec.tasks.filter(t => t.completed).length / rec.tasks.length) * 100 : 0}%"></div>
+      </div>
+      ${rec.tasks.map(t => `
+        <div class="task-item">
+          <div class="task-checkbox ${t.completed ? 'done' : ''}" data-task-id="${t.id}" data-date="${currentDate}"></div>
+          <div class="task-info">
+            <div class="task-name ${t.completed ? 'done' : ''}">${escHtml(t.name)}</div>
+            <div class="task-meta">${t.targetDuration > 0 ? `目标 ${t.targetDuration}分钟 / ${t.targetCalories} kcal` : '每日好习惯'}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="val">${streak}</div>
+        <div class="lbl">连续打卡(天)</div>
+      </div>
+      <div class="summary-item">
+        <div class="val">${getTotalLost().toFixed(1)}</div>
+        <div class="lbl">已减重(kg)</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMealSummary(rec) {
+  const meals = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
+  let html = '';
+  for (const [key, label] of Object.entries(meals)) {
+    const items = rec.foods.filter(f => f.mealType === key);
+    const totalKcal = items.reduce((s, f) => s + f.calories, 0);
+    html += `
+      <div class="meal-section">
+        <div class="meal-header">
+          <span>${label}</span>
+          <span>${totalKcal} kcal</span>
+        </div>
+        ${items.length === 0 ? '<div style="padding:6px 12px;font-size:12px;color:var(--text-secondary)">暂无记录</div>' :
+          items.map(f => `
+            <div class="list-item" style="padding:6px 12px">
+              <div class="list-item-info">
+                <span style="font-size:13px">${escHtml(f.name)}</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-left:6px">${f.weight}g</span>
+              </div>
+              <span style="font-size:13px;font-weight:600">${f.calories} kcal</span>
+            </div>
+          `).join('')
+        }
+      </div>
+    `;
+  }
+  if (rec.foods.length === 0) {
+    html = '<div class="empty-state"><span class="empty-icon">🍽️</span><div class="empty-title">还没有饮食记录</div><div class="empty-hint">今日还未记录饮食，点击「记录」页添加食物吧～</div></div>';
+  }
+  return html;
+}
+
+// ---- RECORD PAGE ----
+function renderRecord() {
+  const rec = getRecord(currentDate);
+  return `
+    <div class="sub-tabs">
+      <div class="sub-tab ${recordSubTab === 'food' ? 'active' : ''}" data-sub="food">饮食记录</div>
+      <div class="sub-tab ${recordSubTab === 'exercise' ? 'active' : ''}" data-sub="exercise">运动记录</div>
+      <div class="sub-tab ${recordSubTab === 'tasks' ? 'active' : ''}" data-sub="tasks">每日任务</div>
+    </div>
+    <div id="recordContent">
+      ${recordSubTab === 'food' ? renderFoodTab(rec) : recordSubTab === 'exercise' ? renderExerciseTab(rec) : renderTasksTab(rec)}
+    </div>
+  `;
+}
+
+function renderFoodTab(rec) {
+  return `
+    <div class="card">
+      <div class="card-title"><span class="title-icon">➕</span> 添加食物</div>
+      <div class="form-group">
+        <label class="form-label">餐类</label>
+        <div class="tags" id="mealTypeTags">
+          <span class="tag active" data-meal="breakfast">早餐</span>
+          <span class="tag" data-meal="lunch">午餐</span>
+          <span class="tag" data-meal="dinner">晚餐</span>
+          <span class="tag" data-meal="snack">加餐</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">选择食物</label>
+        <div class="tags" style="max-height:160px;overflow-y:auto">
+          ${FOOD_DB.map(f => `<span class="tag food-preset" data-name="${escHtml(f.name)}" data-kcal="${f.kcalPer100g}">${escHtml(f.name)} (${f.kcalPer100g}kcal/100g)</span>`).join('')}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">食物名称</label>
+          <input class="form-input" id="foodName" placeholder="如：米饭">
+        </div>
+        <div class="form-group">
+          <label class="form-label">重量(g)</label>
+          <input class="form-input" id="foodWeight" type="number" placeholder="克" value="100" min="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">热量(kcal)</label>
+        <input class="form-input" id="foodKcal" type="number" placeholder="千卡" value="0">
+      </div>
+      <button class="btn btn-primary btn-block" id="btnAddFood">添加食物</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="title-icon">📋</span> 今日饮食列表</div>
+      ${rec.foods.length === 0 ? '<div class="empty-state"><span class="empty-icon">🍽️</span><div class="empty-title">还没有饮食记录</div><div class="empty-hint">点击上方选择食物来添加你的第一餐吧～</div></div>' :
+        rec.foods.map((f, i) => `
+          <div class="list-item">
+            <div class="list-item-info">
+              <div class="list-item-name">${escHtml(f.name)}</div>
+              <div class="list-item-detail">${mealLabel(f.mealType)} · ${f.weight}g</div>
+            </div>
+            <div class="list-item-value">${f.calories} kcal</div>
+            <button class="list-item-del" data-del-food="${i}">×</button>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+}
+
+function renderExerciseTab(rec) {
+  return `
+    <div class="card">
+      <div class="card-title"><span class="title-icon">➕</span> 添加运动</div>
+      <div class="form-group">
+        <label class="form-label">选择运动</label>
+        <div class="tags" style="max-height:160px;overflow-y:auto">
+          ${EXERCISE_DB.map(e => `<span class="tag exercise-preset" data-name="${escHtml(e.name)}" data-kcal="${e.kcalPerMin}">${escHtml(e.name)} (${e.kcalPerMin}kcal/分)</span>`).join('')}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">运动名称</label>
+          <input class="form-input" id="exerciseName" placeholder="如：跑步">
+        </div>
+        <div class="form-group">
+          <label class="form-label">时长(分钟)</label>
+          <input class="form-input" id="exerciseDuration" type="number" placeholder="分钟" value="30" min="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">消耗热量(kcal)</label>
+        <input class="form-input" id="exerciseKcal" type="number" placeholder="千卡" value="0">
+      </div>
+      <button class="btn btn-primary btn-block" id="btnAddExercise">添加运动</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="title-icon">📋</span> 今日运动列表</div>
+      ${rec.exercises.length === 0 ? '<div class="empty-state"><span class="empty-icon">🏃</span><div class="empty-title">还没有运动记录</div><div class="empty-hint">选择上方运动开始记录你的健身成果吧～</div></div>' :
+        rec.exercises.map((e, i) => `
+          <div class="list-item">
+            <div class="list-item-info">
+              <div class="list-item-name">${escHtml(e.name)}</div>
+              <div class="list-item-detail">${e.duration} 分钟</div>
+            </div>
+            <div class="list-item-value">${e.calories} kcal</div>
+            <button class="list-item-del" data-del-exercise="${i}">×</button>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+}
+
+function renderTasksTab(rec) {
+  const recommendedKcal = Math.max(200, Math.round(getDailyDeficit() * 0.4));
+  const recommendedMin = Math.max(20, Math.round(recommendedKcal / 6));
+  return `
+    <div class="card">
+      <div class="card-title"><span class="title-icon">💡</span> 运动建议</div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">
+        根据你的减肥目标，建议每日额外消耗 <b>${recommendedKcal} kcal</b>，约需运动 <b>${recommendedMin} 分钟</b>。
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="title-icon">✏️</span> 添加自定义任务</div>
+      <div class="form-row">
+        <div class="form-group">
+          <input class="form-input" id="taskName" placeholder="任务名称">
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="taskDuration" type="number" placeholder="目标时长(分钟)" value="30">
+        </div>
+      </div>
+      <div class="form-group">
+        <input class="form-input" id="taskCalories" type="number" placeholder="目标消耗(kcal)" value="200">
+      </div>
+      <button class="btn btn-primary btn-block" id="btnAddTask">添加任务</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="title-icon">📋</span> 任务列表</div>
+      ${rec.tasks.length === 0 ? '<div class="empty-state"><span class="empty-icon">✅</span><div class="empty-title">还没有任务</div><div class="empty-hint">点击上方添加你的第一个每日任务吧～</div></div>' :
+        rec.tasks.map((t, i) => `
+          <div class="task-item">
+            <div class="task-checkbox ${t.completed ? 'done' : ''}" data-task-id="${t.id}" data-date="${currentDate}"></div>
+            <div class="task-info">
+              <div class="task-name ${t.completed ? 'done' : ''}">${escHtml(t.name)}</div>
+              <div class="task-meta">${t.targetDuration > 0 ? `目标 ${t.targetDuration}分钟 / ${t.targetCalories} kcal` : '每日好习惯'}</div>
+            </div>
+            <button class="list-item-del" data-del-task="${i}">×</button>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+}
+
+// ---- STATS PAGE ----
+function renderStats() {
+  const p = appData.profile;
+  const totalLost = getTotalLost();
+  const startWeight = getStartWeight();
+  const toLose = Math.max(0, startWeight - p.targetWeight);
+  const progressPct = toLose > 0 ? Math.min(100, (totalLost / toLose) * 100) : 100;
+  const daysPassed = Math.max(1, Math.ceil((new Date() - new Date(p.startDate)) / 86400000));
+  const totalDays = p.weeks * 7;
+  const daysLeft = Math.max(0, totalDays - daysPassed);
+  const estDate = new Date();
+  estDate.setDate(estDate.getDate() + daysLeft);
+
+  return `
+    <div class="card">
+      <div class="card-title"><span class="title-icon">🎯</span> 减肥进度</div>
+      <div class="progress-label">
+        <span>已完成 ${progressPct.toFixed(1)}%</span>
+        <span>${totalLost.toFixed(1)} / ${toLose.toFixed(1)} kg</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill safe" style="width:${progressPct}%"></div>
+      </div>
+      <div class="summary-grid" style="margin-top:12px">
+        <div class="summary-item">
+          <div class="val">${totalLost.toFixed(1)}</div>
+          <div class="lbl">已减(kg)</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${toLose.toFixed(1)}</div>
+          <div class="lbl">还需减(kg)</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${daysLeft}</div>
+          <div class="lbl">剩余天数</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${estDate.toLocaleDateString('zh-CN', {month:'short',day:'numeric'})}</div>
+          <div class="lbl">预计完成</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">📈</span> 体重变化趋势</div>
+      <div class="chart-wrap"><canvas id="weightChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">📊</span> 热量摄入与消耗 (最近14天)</div>
+      <div class="chart-wrap"><canvas id="calorieChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">📅</span> 每周统计汇总</div>
+      <div id="weeklySummary">${renderWeeklySummary()}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">🔥</span> 打卡统计</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="val">${getStreak()}</div>
+          <div class="lbl">连续打卡(天)</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${getTotalRecordDays()}</div>
+          <div class="lbl">总记录天数</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getTotalRecordDays() {
+  return Object.keys(appData.records).filter(d => {
+    const r = appData.records[d];
+    return r && (r.foods.length > 0 || r.exercises.length > 0);
+  }).length;
+}
+
+function renderWeeklySummary() {
+  const weeks = getWeeklyData();
+  if (weeks.length === 0) return '<div class="empty-state"><span class="empty-icon">📅</span><div class="empty-title">还没有统计数据</div><div class="empty-hint">坚持记录饮食和运动，这里就会出现每周汇总啦～</div></div>';
+  return weeks.map(w => `
+    <div class="list-item">
+      <div class="list-item-info">
+        <div class="list-item-name">${w.label}</div>
+        <div class="list-item-detail">${w.days}天记录</div>
+      </div>
+      <div style="text-align:right;font-size:12px">
+        <div>摄入 ${w.avgIntake} kcal/天</div>
+        <div style="color:var(--success)">消耗 ${w.avgBurned} kcal/天</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getWeeklyData() {
+  const weeks = [];
+  const now = new Date();
+  for (let i = 3; i >= 0; i--) {
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay() - i * 7);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    let totalIntake = 0, totalBurned = 0, days = 0;
+    for (let d = new Date(weekStart); d <= weekEnd && d <= now; d.setDate(d.getDate() + 1)) {
+      const ds = d.toISOString().split('T')[0];
+      const rec = appData.records[ds];
+      if (rec && (rec.foods.length > 0 || rec.exercises.length > 0)) {
+        totalIntake += getDayIntake(ds);
+        totalBurned += getDayBurned(ds);
+        days++;
+      }
+    }
+    if (days > 0) {
+      weeks.push({
+        label: `${weekStart.getMonth()+1}/${weekStart.getDate()}-${weekEnd.getMonth()+1}/${weekEnd.getDate()}`,
+        days, avgIntake: Math.round(totalIntake / days), avgBurned: Math.round(totalBurned / days)
+      });
+    }
+  }
+  return weeks;
+}
+
+// ---- SETTINGS PAGE ----
+function renderSettings() {
+  const p = appData.profile;
+  const bmr = Math.round(getBMR());
+  const tdee = getTDEE();
+  const deficit = getDailyDeficit();
+  const targetIntake = getTargetIntake();
+  return `
+    <div class="card">
+      <div class="card-title"><span class="title-icon">👤</span> 个人资料</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">性别</label>
+          <select class="form-select" id="setGender">
+            <option value="male" ${p.gender === 'male' ? 'selected' : ''}>男性</option>
+            <option value="female" ${p.gender === 'female' ? 'selected' : ''}>女性</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">年龄</label>
+          <input class="form-input" id="setAge" type="number" value="${p.age}" min="10" max="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">身高(cm)</label>
+          <input class="form-input" id="setHeight" type="number" value="${p.height}" min="100" max="250">
+        </div>
+        <div class="form-group">
+          <label class="form-label">当前体重(kg)</label>
+          <input class="form-input" id="setCurrentWeight" type="number" value="${p.currentWeight}" min="30" max="300" step="0.1">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">目标体重(kg)</label>
+          <input class="form-input" id="setTargetWeight" type="number" value="${p.targetWeight}" min="30" max="300" step="0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">减肥周期(周)</label>
+          <input class="form-input" id="setWeeks" type="number" value="${p.weeks}" min="1" max="52">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">活动水平</label>
+        <select class="form-select" id="setActivity">
+          ${ACTIVITY_LEVELS.map(l => `<option value="${l.value}" ${p.activityLevel === l.value ? 'selected' : ''}>${l.label} (x${l.factor})</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" id="btnSaveProfile">保存资料</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">🔢</span> 计算结果</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="val">${bmr}</div>
+          <div class="lbl">基础代谢(BMR)</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${tdee}</div>
+          <div class="lbl">每日消耗(TDEE)</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${deficit}</div>
+          <div class="lbl">每日热量缺口</div>
+        </div>
+        <div class="summary-item">
+          <div class="val">${targetIntake}</div>
+          <div class="lbl">目标摄入</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">⚖️</span> 今日体重记录</div>
+      <div class="form-row">
+        <div class="form-group">
+          <input class="form-input" id="setWeight" type="number" value="${appData.weightLog[currentDate] || p.currentWeight}" step="0.1" placeholder="体重(kg)">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-outline btn-block" id="btnSaveWeight">记录体重</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="title-icon">⚙️</span> 数据管理</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-outline btn-block" id="btnExport">导出数据 (CSV)</button>
+        <button class="btn btn-outline btn-block" id="btnImport">导入数据 (CSV)</button>
+        <button class="btn btn-danger btn-block" id="btnReset">重置所有数据</button>
+      </div>
+    </div>
+
+    <div class="card" id="pwaInstallArea" style="display:none">
+      <div class="card-title"><span class="title-icon">📲</span> 安装应用</div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">
+        将 FitTrack 添加到主屏幕，像原生 App 一样快速启动，支持离线使用。
+      </p>
+      <button class="btn btn-primary btn-block" onclick="triggerInstall()">添加到主屏幕</button>
+    </div>
+
+    <div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:12px">
+      FitTrack v2.0 · PWA离线可用 · 数据存储于浏览器本地
+    </div>
+  `;
+}
+
+// ---- CHARTS ----
+let weightChart = null;
+let calorieChart = null;
+
+function initCharts() {
+  setTimeout(() => {
+    initWeightChart();
+    initCalorieChart();
+  }, 100);
+}
+
+function initWeightChart() {
+  const ctx = document.getElementById('weightChart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  if (weightChart) weightChart.destroy();
+
+  const entries = Object.entries(appData.weightLog).sort();
+  if (entries.length < 2) {
+    const p = appData.profile;
+    const todayStr = today();
+    const startStr = p.startDate || todayStr;
+    entries.length = 0;
+    entries.push([startStr, p.currentWeight]);
+    if (!appData.weightLog[todayStr] && startStr !== todayStr) {
+      entries.push([todayStr, p.currentWeight]);
+    }
+  }
+
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => parseFloat(e[1]));
+  const targetWeight = appData.profile.targetWeight;
+
+  weightChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: '体重(kg)', data, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.3, pointRadius: 3 },
+        { label: '目标体重', data: Array(labels.length).fill(targetWeight), borderColor: '#16a34a', borderDash: [5, 5], pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } } },
+      scales: { y: { beginAtZero: false } }
+    }
+  });
+}
+
+function initCalorieChart() {
+  const ctx = document.getElementById('calorieChart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  if (calorieChart) calorieChart.destroy();
+
+  const labels = [];
+  const intakeData = [];
+  const burnedData = [];
+  const targetData = [];
+  const targetIntake = getTargetIntake();
+
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    labels.push(`${d.getMonth()+1}/${d.getDate()}`);
+    intakeData.push(getDayIntake(ds));
+    burnedData.push(getDayBurned(ds));
+    targetData.push(targetIntake);
+  }
+
+  calorieChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: '摄入(kcal)', data: intakeData, backgroundColor: '#2563eb', borderRadius: 4 },
+        { label: '运动消耗(kcal)', data: burnedData, backgroundColor: '#16a34a', borderRadius: 4 },
+        { label: '目标摄入', data: targetData, type: 'line', borderColor: '#ea580c', borderDash: [4, 4], pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+
+function bindPageEvents() {
+  // Task checkboxes
+  $$('.task-checkbox').forEach(cb => {
+    cb.addEventListener('click', function() {
+      const taskId = this.dataset.taskId;
+      const date = this.dataset.date;
+      const rec = getRecord(date);
+      const task = rec.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.completed = !task.completed;
+        saveData(appData);
+        renderPage();
+      }
+    });
+  });
+
+  // Food presets
+  $$('.food-preset').forEach(tag => {
+    tag.addEventListener('click', function() {
+      const name = this.dataset.name;
+      const kcal = parseFloat(this.dataset.kcal);
+      const nameInput = $('#foodName');
+      const kcalInput = $('#foodKcal');
+      const weightInput = $('#foodWeight');
+      if (nameInput) nameInput.value = name;
+      if (kcalInput) kcalInput.value = Math.round(kcal * (parseInt(weightInput?.value || 100) / 100));
+      // Highlight
+      $$('.food-preset').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Exercise presets
+  $$('.exercise-preset').forEach(tag => {
+    tag.addEventListener('click', function() {
+      const name = this.dataset.name;
+      const kcalPerMin = parseFloat(this.dataset.kcal);
+      const nameInput = $('#exerciseName');
+      const kcalInput = $('#exerciseKcal');
+      const durInput = $('#exerciseDuration');
+      if (nameInput) nameInput.value = name;
+      const dur = parseInt(durInput?.value || 30);
+      if (kcalInput) kcalInput.value = Math.round(kcalPerMin * dur);
+      $$('.exercise-preset').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Auto-calculate calories from weight change
+  const foodWeightInput = $('#foodWeight');
+  const foodKcalInput = $('#foodKcal');
+  if (foodWeightInput && foodKcalInput) {
+    foodWeightInput.addEventListener('input', function() {
+      const activePreset = document.querySelector('.food-preset.active');
+      if (activePreset) {
+        const kcalPer100 = parseFloat(activePreset.dataset.kcal);
+        foodKcalInput.value = Math.round(kcalPer100 * (parseInt(this.value || 0) / 100));
+      }
+    });
+  }
+
+  // Auto-calculate exercise calories from duration
+  const exerciseDurInput = $('#exerciseDuration');
+  const exerciseKcalInput = $('#exerciseKcal');
+  if (exerciseDurInput && exerciseKcalInput) {
+    exerciseDurInput.addEventListener('input', function() {
+      const activePreset = document.querySelector('.exercise-preset.active');
+      if (activePreset) {
+        const kcalPerMin = parseFloat(activePreset.dataset.kcal);
+        exerciseKcalInput.value = Math.round(kcalPerMin * parseInt(this.value || 0));
+      }
+    });
+  }
+
+  // Meal type tags
+  $$('#mealTypeTags .tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+      $$('#mealTypeTags .tag').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Sub tabs
+  $$('.sub-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      recordSubTab = this.dataset.sub;
+      renderPage();
+    });
+  });
+
+  // Add food button
+  const btnFood = $('#btnAddFood');
+  if (btnFood) {
+    btnFood.addEventListener('click', function() {
+      const mealType = document.querySelector('#mealTypeTags .tag.active')?.dataset?.meal || 'breakfast';
+      const name = $('#foodName')?.value?.trim();
+      const weight = parseInt($('#foodWeight')?.value || '0');
+      const kcal = parseInt($('#foodKcal')?.value || '0');
+      if (!name || !weight || !kcal) {
+        showToast('请填写完整信息');
+        return;
+      }
+      const rec = getRecord(currentDate);
+      rec.foods.push({ id: Date.now(), mealType, name, weight, calories: kcal, time: new Date().toISOString() });
+      saveData(appData);
+      renderPage();
+      showToast('食物已添加');
+    });
+  }
+
+  // Add exercise button
+  const btnEx = $('#btnAddExercise');
+  if (btnEx) {
+    btnEx.addEventListener('click', function() {
+      const name = $('#exerciseName')?.value?.trim();
+      const duration = parseInt($('#exerciseDuration')?.value || '0');
+      const kcal = parseInt($('#exerciseKcal')?.value || '0');
+      if (!name || !duration || !kcal) {
+        showToast('请填写完整信息');
+        return;
+      }
+      const rec = getRecord(currentDate);
+      rec.exercises.push({ id: Date.now(), name, duration, calories: kcal, time: new Date().toISOString() });
+      saveData(appData);
+      renderPage();
+      showToast('运动已添加');
+    });
+  }
+
+  // Add task button
+  const btnTask = $('#btnAddTask');
+  if (btnTask) {
+    btnTask.addEventListener('click', function() {
+      const name = $('#taskName')?.value?.trim();
+      const dur = parseInt($('#taskDuration')?.value || '0');
+      const kcal = parseInt($('#taskCalories')?.value || '0');
+      if (!name) { showToast('请输入任务名称'); return; }
+      const rec = getRecord(currentDate);
+      rec.tasks.push({ id: 't' + Date.now(), name, targetDuration: dur, targetCalories: kcal, completed: false, generated: false });
+      saveData(appData);
+      renderPage();
+      showToast('任务已添加');
+    });
+  }
+
+  // Delete food
+  $$('[data-del-food]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.dataset.delFood);
+      const rec = getRecord(currentDate);
+      rec.foods.splice(idx, 1);
+      saveData(appData);
+      renderPage();
+    });
+  });
+
+  // Delete exercise
+  $$('[data-del-exercise]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.dataset.delExercise);
+      const rec = getRecord(currentDate);
+      rec.exercises.splice(idx, 1);
+      saveData(appData);
+      renderPage();
+    });
+  });
+
+  // Delete task
+  $$('[data-del-task]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.dataset.delTask);
+      const rec = getRecord(currentDate);
+      rec.tasks.splice(idx, 1);
+      saveData(appData);
+      renderPage();
+    });
+  });
+
+  // Save profile
+  const btnSaveProfile = $('#btnSaveProfile');
+  if (btnSaveProfile) {
+    btnSaveProfile.addEventListener('click', function() {
+      appData.profile.gender = $('#setGender').value;
+      appData.profile.age = parseInt($('#setAge').value) || 25;
+      appData.profile.height = parseInt($('#setHeight').value) || 170;
+      appData.profile.currentWeight = parseFloat($('#setCurrentWeight').value) || 70;
+      appData.profile.targetWeight = parseFloat($('#setTargetWeight').value) || 65;
+      appData.profile.weeks = parseInt($('#setWeeks').value) || 12;
+      appData.profile.activityLevel = $('#setActivity').value;
+      if (!appData.profile.startDate) appData.profile.startDate = today();
+      // Auto-record initial weight on start date
+      if (!appData.weightLog[appData.profile.startDate]) {
+        appData.weightLog[appData.profile.startDate] = appData.profile.currentWeight;
+      }
+      saveData(appData);
+      renderPage();
+      showToast('资料已保存');
+    });
+  }
+
+  // Save weight
+  const btnSaveWeight = $('#btnSaveWeight');
+  if (btnSaveWeight) {
+    btnSaveWeight.addEventListener('click', function() {
+      const w = parseFloat($('#setWeight').value);
+      if (!w || w < 20 || w > 500) { showToast('请输入有效体重'); return; }
+      appData.weightLog[currentDate] = w;
+      appData.profile.currentWeight = w;
+      saveData(appData);
+      renderPage();
+      showToast('体重已记录');
+    });
+  }
+
+  // Export
+  const btnExport = $('#btnExport');
+  if (btnExport) {
+    btnExport.addEventListener('click', exportCSV);
+  }
+
+  // Import
+  const btnImport = $('#btnImport');
+  if (btnImport) {
+    btnImport.addEventListener('click', function() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.csv';
+      input.addEventListener('change', importCSV);
+      input.click();
+    });
+  }
+
+  // Reset
+  const btnReset = $('#btnReset');
+  if (btnReset) {
+    btnReset.addEventListener('click', function() {
+      showConfirm('确定要重置所有数据吗？此操作不可恢复。', function() {
+        localStorage.removeItem(STORAGE_KEY);
+        appData = initDefaultData();
+        currentDate = today();
+        renderPage();
+        showToast('数据已重置');
+      });
+    });
+  }
+
+  // PWA install area visibility
+  const installArea = document.getElementById('pwaInstallArea');
+  if (installArea) {
+    if (deferredPrompt && !isPWA()) {
+      installArea.style.display = 'block';
+    } else {
+      installArea.style.display = 'none';
+    }
+  }
+}
+
+// ============================================================
+// CSV IMPORT/EXPORT
+// ============================================================
+
+function exportCSV() {
+  let csv = '类型,日期,餐类/分类,名称,重量(g)/时长(分钟),热量(kcal)\n';
+  const dates = Object.keys(appData.records).sort();
+  for (const date of dates) {
+    const rec = appData.records[date];
+    for (const f of rec.foods) {
+      csv += `食物,${date},${mealLabel(f.mealType)},"${f.name}",${f.weight},${f.calories}\n`;
+    }
+    for (const e of rec.exercises) {
+      csv += `运动,${date},,"${e.name}",${e.duration},${e.calories}\n`;
+    }
+  }
+  for (const [date, weight] of Object.entries(appData.weightLog)) {
+    csv += `体重,${date},,,${weight},\n`;
+  }
+
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `fittrack_export_${today()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出');
+}
+
+function importCSV(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const text = ev.target.result;
+      const lines = text.split('\n').filter(l => l.trim());
+      if (lines.length < 2) { showToast('文件格式不正确'); return; }
+      let imported = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        if (cols.length < 6) continue;
+        const type = cols[0].trim();
+        const date = cols[1].trim();
+        if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) continue;
+        if (type === '食物') {
+          const mealType = cols[2].includes('早餐') ? 'breakfast' : cols[2].includes('午餐') ? 'lunch' : cols[2].includes('晚餐') ? 'dinner' : 'snack';
+          const name = cols[3].replace(/"/g, '');
+          const weight = parseInt(cols[4]) || 0;
+          const calories = parseInt(cols[5]) || 0;
+          const rec = getRecord(date);
+          rec.foods.push({ id: Date.now() + Math.random(), mealType, name, weight, calories, time: new Date().toISOString() });
+          imported++;
+        } else if (type === '运动') {
+          const name = cols[3].replace(/"/g, '');
+          const duration = parseInt(cols[4]) || 0;
+          const calories = parseInt(cols[5]) || 0;
+          const rec = getRecord(date);
+          rec.exercises.push({ id: Date.now() + Math.random(), name, duration, calories, time: new Date().toISOString() });
+          imported++;
+        } else if (type === '体重') {
+          const weight = parseFloat(cols[4]);
+          if (weight) appData.weightLog[date] = weight;
+          imported++;
+        }
+      }
+      saveData(appData);
+      renderPage();
+      showToast(`成功导入 ${imported} 条记录`);
+    } catch (err) {
+      showToast('导入失败，请检查文件格式');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (const ch of line) {
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current);
+  return result;
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+
+function mealLabel(type) {
+  const map = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐', snack: '加餐' };
+  return map[type] || type;
+}
+
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+function showConfirm(msg, onConfirm) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <h3>确认操作</h3>
+      <p>${msg}</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" id="confirmCancel">取消</button>
+        <button class="btn btn-danger" id="confirmOk">确定</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#confirmCancel').addEventListener('click', () => overlay.remove());
+  overlay.querySelector('#confirmOk').addEventListener('click', () => {
+    overlay.remove();
+    if (onConfirm) onConfirm();
+  });
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+
+function init() {
+  // Global date picker
+  const dateInput = $('#globalDate');
+  dateInput.value = currentDate;
+  dateInput.addEventListener('change', function() {
+    switchDate(this.value);
+  });
+
+  // Bottom nav
+  $$('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      switchPage(this.dataset.page);
+    });
+  });
+
+  // Ensure today has tasks
+  ensureDate(currentDate);
+
+  // Initial render
+  renderPage();
+  // Trigger number animations on initial load
+  setTimeout(animateMetricValues, 200);
+
+  // On first ever load, check if profile needs initial setup
+  if (!appData.profile.startDate) {
+    appData.profile.startDate = today();
+    saveData(appData);
+  }
+  // Auto-log initial weight if weight log is empty
+  if (Object.keys(appData.weightLog).length === 0) {
+    appData.weightLog[appData.profile.startDate || today()] = appData.profile.currentWeight;
+    saveData(appData);
+  }
+
+  // ── Register Service Worker ──────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // Check if a new SW is waiting
+      if (reg.waiting) {
+        showUpdateToast(reg);
+      }
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateToast(reg);
+          }
+        });
+      });
+    }).catch(() => {
+      // App still works without SW — no action needed
+    });
+
+    // If the controlling SW changes, reload to activate new cache
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  }
+
+  // ── Handle URL query parameters (App Shortcuts) ──────
+  const params = new URLSearchParams(window.location.search);
+  const shortcutPage = params.get('page');
+  if (shortcutPage && ['home', 'record', 'stats', 'settings'].includes(shortcutPage)) {
+    currentPage = shortcutPage;
+    const shortcutTab = params.get('tab');
+    if (shortcutTab && ['food', 'exercise', 'tasks'].includes(shortcutTab)) {
+      recordSubTab = shortcutTab;
+    }
+    // Update nav active state
+    $$('.nav-item').forEach(n => n.classList.remove('active'));
+    const navItem = $(`.nav-item[data-page="${shortcutPage}"]`);
+    if (navItem) navItem.classList.add('active');
+  }
+}
+
+// ── SW Update Toast ────────────────────────────────────
+function showUpdateToast(reg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.cssText = 'background:#2E7D32;pointer-events:auto;cursor:pointer;animation:none;opacity:1;';
+  toast.innerHTML = '有新版本可用 · 点击更新';
+  toast.addEventListener('click', () => {
+    if (reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    toast.remove();
+  });
+  document.body.appendChild(toast);
+  setTimeout(() => { if (document.body.contains(toast)) toast.remove(); }, 10000);
+}
+
+// ---- PWA INSTALL PROMPT ----
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show install button if on settings page
+  if (currentPage === 'settings' && !isPWA()) {
+    const installArea = document.getElementById('pwaInstallArea');
+    if (installArea) installArea.style.display = 'block';
+  }
+});
+
+// Re-show install prompt after app installed event
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  const installArea = document.getElementById('pwaInstallArea');
+  if (installArea) installArea.style.display = 'none';
+});
+
+// Detect if running as installed PWA
+function isPWA() {
+  return window.matchMedia('(display-mode: standalone)').matches
+      || navigator.standalone
+      || document.referrer.includes('android-app://');
+}
+
+async function triggerInstall() {
+  if (!deferredPrompt) {
+    showToast('安装功能暂不可用。你可以在浏览器菜单中选择「添加到主屏幕」');
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    showToast('应用安装成功！');
+  }
+  deferredPrompt = null;
+  const installArea = document.getElementById('pwaInstallArea');
+  if (installArea) installArea.style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
