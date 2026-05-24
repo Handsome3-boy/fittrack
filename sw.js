@@ -1,12 +1,14 @@
 // FitTrack Service Worker — PWA Offline Support
 // Cache-first for local assets, network-first for CDN, stale-while-revalidate for data
 
-const CACHE_VERSION = 'fittrack-v5';
+const CACHE_VERSION = 'fittrack-v6';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const CDN_CACHE = CACHE_VERSION + '-cdn';
 
 // Core assets to pre-cache on install
 const PRECACHE_ASSETS = [
+  './',
+  './index.html',
   './fitness-tracker.html',
   './manifest.json',
   './icon-192.svg',
